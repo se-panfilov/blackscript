@@ -82,19 +82,19 @@ function globUsage (str) {
 //BS
 globUsage < (
   log, info : console window
+  //shitHappens < error : console window //alias for method
 
-  setTimeout /< [(
+  setTimeout /< (
     /str > log >>
     log < 'Done' >>
-  ), 50] : window >>
+  ), 50 : window >>
 
-  setInterval /< [(
-    alert: window
-    alert /< 'it\'s happens' >>
-    alert /['it\'s happens'] >>
-  ), 100] : window >> index
+  //or another approach
+  (alert /< 'it\'s happens' : window), 100 >/ setInteval : window >> index
 
   clearInterval /< index : window
+  //or
+  (alert /< 'it\'s happens' : window) >/ setInteval /< 100 : window >>/ clearInterval
 
   = true
 )
