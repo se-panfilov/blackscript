@@ -1,127 +1,15 @@
-const canvasData = (function () {
-  return {
-    ctx: null,
-    canvas: null,
-    CANVAS_ID: 'canvas',
-    getCanvas (){
-      return document.getElementById(this.CANVAS_ID)
-    },
-    getCursorPosition (canvas, event) {
-      const rect = canvas.getBoundingClientRect()
-      const x = event.clientX - rect.left
-      const y = event.clientY - rect.top
-
-      return { x, y }
-    }
-  }
-}());
-
-const drawer = {
-  drawDot (ctx, position, radius = 5.5, color = 'red', width = 1) {
-    ctx.beginPath()
-    ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI)
-    ctx.closePath()
-    ctx.strokeStyle = color
-    ctx.lineWidth = width
-    ctx.stroke()
-
-    return position
-  },
-  drawRect (ctx, shapeObj, color = 'blue', width = 1) {
-    ctx.beginPath()
-    ctx.moveTo(shapeObj.points.a.x, shapeObj.points.a.y)
-    ctx.lineTo(shapeObj.points.b.x, shapeObj.points.b.y)
-    ctx.lineTo(shapeObj.points.c.x, shapeObj.points.c.y)
-    ctx.lineTo(shapeObj.points.d.x, shapeObj.points.d.y)
-
-    ctx.closePath()
-    ctx.strokeStyle = color
-    ctx.lineWidth = width
-    ctx.stroke()
-
-    return shapeObj
-  },
-  drawCircle (ctx, shapeObj, color = 'yellow', width = 1) {
-    ctx.beginPath()
-    ctx.arc(shapeObj.points.o.x, shapeObj.points.o.y, shapeObj.props.radius, 0, 2 * Math.PI)
-    ctx.closePath()
-    ctx.strokeStyle = color
-    ctx.lineWidth = width
-    ctx.stroke()
-
-    return shapeObj
-  }
-}
-
-const dragger = {
-  coords: {
-    x: null,
-    y: null
-  },
-  isMouseDown: false,
-  onMouseDown (event) {
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-
-    let mouseX = parseInt(event.clientX - x)
-    let mouseY = parseInt(event.clientY - y)
-
-    this.coords.x = mouseX
-    this.coords.y = mouseY
-
-    this.isMouseDown = true
-  },
-  onMouseUp (event) {
-    this.isMouseDown = false
-  },
-  onMouseMove (event, objs) {
-    if (!this.isMouseDown) return
-
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-
-    let mouseX = parseInt(event.clientX - x)
-    let mouseY = parseInt(event.clientY - y)
-
-    // for each obj in the objs array
-    // use context.isPointInPath to test if it’s being dragged
-
-    for (let i = 0; i < objs.length; i++) {
-      let obj = objs[i]
-      drawObj(obj)
-      if (ctx.isPointInPath(lastX, lastY)) {
-
-        // if this obj’s being dragged,
-        // move it by the change in mouse position from lastXY to currentXY
-
-        obj.x += (mouseX - this.coords.x )
-        obj.y += (mouseY - this.coords.y)
-        obj.right = obj.x + obj.width
-        obj.bottom = obj.y + obj.height
-      }
-    }
-
-    // update the lastXY to the current mouse position
-    this.coords.x = mouseX
-    this.coords.y = mouseY
-
-    // draw all ships in their new positions
-    drawAllObjs()
-  }
-}
-
-const drawFn = (function draw (canvasData, drawer, dragger) {
+const drawFn = (function draw (Canvas, drawer, Dragger) {
 
   const EVENTS = {
     CLICK: 'click',
     MOUSE_DOWN: 'mousedown'
   }
 
-  const canvas = canvasData.getCanvas(event)
-  canvas.addEventListener(EVENTS.CLICK, onClick, false)
-  canvas.addEventListener(EVENTS.MOUSE_DOWN, onMouseDown, false)
+  const canvasData = new Canvas('canvas').init()
+  // const canvas = canvasData.getCanvas(event)
+
+  canvasData.canvas.addEventListener(EVENTS.CLICK, onClick, false)
+  canvasData.canvas.addEventListener(EVENTS.MOUSE_DOWN, onMouseDown, false)
 
   const shapeCounting = {
     common: {
@@ -256,17 +144,6 @@ const drawFn = (function draw (canvasData, drawer, dragger) {
     drawer.drawCircle(ctx, shape)
   }
 
-
-  const canvasData = {}
-
-  function init () {
-    canvasData.ctx = canvas.getContext("2d")
-    canvasData.canvas = canvasData.getCanvas()
-    canvasData.canvas.style.cursor = 'pointer'
-  }
-
-  init()
-
   // TODO (S.Panfilov)
   let done = false
 
@@ -284,9 +161,9 @@ const drawFn = (function draw (canvasData, drawer, dragger) {
 
   function onMouseDown (event) {
     // console.info('onMouseDown')
-    // if (isInPath(canvasData.ctx, canvasData.canvas, event)) {
+    // if (isInPath(Canvas.ctx, Canvas.canvas, event)) {
     //
-    //   selStyle(canvasData.ctx)
+    //   selStyle(Canvas.ctx)
     // }
 
     const position = canvasData.getCursorPosition(canvasData.canvas, event)
@@ -318,4 +195,4 @@ const drawFn = (function draw (canvasData, drawer, dragger) {
   return function draw () {
     // makeRect(ctx, rectShape => makeCircle(ctx, rectShape))
   }
-}(canvasData, drawer, dragger));
+}(Canvas, drawer, Dragger));
