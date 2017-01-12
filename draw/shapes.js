@@ -1,5 +1,7 @@
-const utils = (function () {
+const canvasData = (function () {
   return {
+    ctx: null,
+    canvas: null,
     CANVAS_ID: 'canvas',
     getCanvas (){
       return document.getElementById(this.CANVAS_ID)
@@ -13,7 +15,6 @@ const utils = (function () {
     }
   }
 }());
-
 
 const drawer = {
   drawDot (ctx, position, radius = 5.5, color = 'red', width = 1) {
@@ -52,14 +53,73 @@ const drawer = {
   }
 }
 
-const drawFn = (function draw (utils, drawer) {
+const dragger = {
+  coords: {
+    x: null,
+    y: null
+  },
+  isMouseDown: false,
+  onMouseDown (event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+
+    let mouseX = parseInt(event.clientX - x)
+    let mouseY = parseInt(event.clientY - y)
+
+    this.coords.x = mouseX
+    this.coords.y = mouseY
+
+    this.isMouseDown = true
+  },
+  onMouseUp (event) {
+    this.isMouseDown = false
+  },
+  onMouseMove (event, objs) {
+    if (!this.isMouseDown) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+
+    let mouseX = parseInt(event.clientX - x)
+    let mouseY = parseInt(event.clientY - y)
+
+    // for each obj in the objs array
+    // use context.isPointInPath to test if it’s being dragged
+
+    for (let i = 0; i < objs.length; i++) {
+      let obj = objs[i]
+      drawObj(obj)
+      if (ctx.isPointInPath(lastX, lastY)) {
+
+        // if this obj’s being dragged,
+        // move it by the change in mouse position from lastXY to currentXY
+
+        obj.x += (mouseX - this.coords.x )
+        obj.y += (mouseY - this.coords.y)
+        obj.right = obj.x + obj.width
+        obj.bottom = obj.y + obj.height
+      }
+    }
+
+    // update the lastXY to the current mouse position
+    this.coords.x = mouseX
+    this.coords.y = mouseY
+
+    // draw all ships in their new positions
+    drawAllObjs()
+  }
+}
+
+const drawFn = (function draw (canvasData, drawer, dragger) {
 
   const EVENTS = {
     CLICK: 'click',
     MOUSE_DOWN: 'mousedown'
   }
 
-  const canvas = utils.getCanvas(event)
+  const canvas = canvasData.getCanvas(event)
   canvas.addEventListener(EVENTS.CLICK, onClick, false)
   canvas.addEventListener(EVENTS.MOUSE_DOWN, onMouseDown, false)
 
@@ -197,14 +257,11 @@ const drawFn = (function draw (utils, drawer) {
   }
 
 
-  const canvasData = {
-    ctx: null,
-    canvas: null
-  }
+  const canvasData = {}
 
   function init () {
     canvasData.ctx = canvas.getContext("2d")
-    canvasData.canvas = utils.getCanvas()
+    canvasData.canvas = canvasData.getCanvas()
     canvasData.canvas.style.cursor = 'pointer'
   }
 
@@ -215,7 +272,7 @@ const drawFn = (function draw (utils, drawer) {
 
   function onClick (event) {
     if (!done) {
-      const position = utils.getCursorPosition(canvasData.canvas, event)
+      const position = canvasData.getCursorPosition(canvasData.canvas, event)
       if (Object.keys(shapeData.rect.data.points).length <= 3) fillRect(canvasData.ctx, position)
 
       if (Object.keys(shapeData.rect.data.points).length === 3) {
@@ -232,9 +289,9 @@ const drawFn = (function draw (utils, drawer) {
     //   selStyle(canvasData.ctx)
     // }
 
-    const position = utils.getCursorPosition(canvasData.canvas, event)
-    // const closestKey = shapeData.rect.getClosestPoint(position)
-    // console.info(closestKey)
+    const position = canvasData.getCursorPosition(canvasData.canvas, event)
+    const closestKey = shapeData.rect.getClosestPoint(position)
+    console.info(closestKey)
   }
 
   function isInPath (ctx, canvas, event) {
@@ -261,4 +318,4 @@ const drawFn = (function draw (utils, drawer) {
   return function draw () {
     // makeRect(ctx, rectShape => makeCircle(ctx, rectShape))
   }
-}(utils, drawer));
+}(canvasData, drawer, dragger));
