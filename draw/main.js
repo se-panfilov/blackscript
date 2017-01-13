@@ -59,8 +59,10 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
     }
   }
 
-  main.canvas.cnv.addEventListener(main.EVENTS.CLICK, onClick, false)
-
+  function init () {
+    main.canvas.cnv.addEventListener(main.EVENTS.CLICK, onClick, false)
+    return main
+  }
 
   function onClick (event) {
     if (main.state.isDrawState()) {
@@ -97,6 +99,5 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
     main.state.setMoveState()
   }
 
-
-  return main
+  return init()
 }(Canvas, drawer, Dragger, Rect, Circle));
