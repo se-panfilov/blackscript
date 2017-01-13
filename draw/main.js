@@ -29,6 +29,7 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
     canvas: new Canvas('canvas').init(),
     rect: new Rect(),
     circle: new Circle(),
+    dragger: null,
     fillRect (ctx, position) {
       return this.rect.addPoint(drawer.drawDot(ctx, position))
     },
@@ -56,45 +57,62 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
       drawer.drawDot(this.canvas.ctx, this.rect.data.points.c)
 
       this.makeRect(this.canvas.ctx, rectShape => this.makeCircle(this.canvas.ctx, rectShape))
-    }
-  }
+    },
+    reset () {
+      this.canvas.clear()
+      this.canvas = new Canvas('canvas').init()
+      this.rect = new Rect()
+      this.circle = new Circle()
+      this.state.setDrawState()
 
-  function init () {
-    main.canvas.cnv.addEventListener(main.EVENTS.CLICK, onClick, false)
-    return main
-  }
+      this.canvas.cnv.removeEventListener(this.EVENTS.CLICK, this.Handlers.onClick)
+      this.canvas.cnv.removeEventListener(this.EVENTS.MOUSE_DOWN, this.Handlers.onMouseDown)
+      this.canvas.cnv.removeEventListener(this.EVENTS.MOUSE_UP, this.Handlers.onMouseUp)
+      this.canvas.cnv.removeEventListener(this.EVENTS.MOUSE_MOVE, this.Handlers.onMouseMove)
 
-  function onClick (event) {
-    if (main.state.isDrawState()) {
-      const position = main.canvas.getCursorPosition(main.canvas.cnv, event)
-      if (Object.keys(main.rect.data.points).length <= 3) main.fillRect(main.canvas.ctx, position)
+      init()
+    },
+    Handlers: {
+      onMouseDown (event) {
+        if (!main.state.isMoveState()) return
+        main.dragger.onMouseDown.call(main.dragger, event)
+      },
+      onMouseUp (event) {
+        if (!main.state.isMoveState()) return
+        main.dragger.onMouseUp.call(main.dragger, event)
+      },
+      onMouseMove (event) {
+        if (!main.state.isMoveState()) return
+        if (!main.dragger.isMouseDown) return
 
-      if (Object.keys(main.rect.data.points).length === 3) {
-        main.makeRect(main.canvas.ctx, rectShape => main.makeCircle(main.canvas.ctx, rectShape))
-        activateDragPoints(main.canvas.cnv, main.rect.data.points)
+        main.dragger.onMouseMove.call(main.dragger, event, main.redraw.bind(main))
+      },
+      onClick (event) {
+        if (main.state.isDrawState()) {
+          const position = main.canvas.getCursorPosition(main.canvas.cnv, event)
+          if (Object.keys(main.rect.data.points).length <= 3) main.fillRect(main.canvas.ctx, position)
+
+          if (Object.keys(main.rect.data.points).length === 3) {
+            main.makeRect(main.canvas.ctx, rectShape => main.makeCircle(main.canvas.ctx, rectShape))
+            activateDragPoints(main.canvas.cnv, main.rect.data.points)
+          }
+        }
       }
     }
   }
 
+  function init () {
+    main.canvas.cnv.addEventListener(main.EVENTS.CLICK, main.Handlers.onClick, false)
+    return main
+  }
+
+
   function activateDragPoints (cnv, draggableObj) {
-    const dragger = new Dragger(cnv, draggableObj)
+    main.dragger = new Dragger(cnv, draggableObj)
 
-    cnv.addEventListener(main.EVENTS.MOUSE_DOWN, event => {
-      if (!main.state.isMoveState()) return
-      dragger.onMouseDown.call(dragger, event)
-    }, false)
-
-    cnv.addEventListener(main.EVENTS.MOUSE_UP, event => {
-      if (!main.state.isMoveState()) return
-      dragger.onMouseUp.call(dragger, event)
-    }, false)
-
-    cnv.addEventListener(main.EVENTS.MOUSE_MOVE, event => {
-      if (!main.state.isMoveState()) return
-      if (!dragger.isMouseDown) return
-
-      dragger.onMouseMove.call(dragger, event, main.redraw.bind(main))
-    }, false)
+    cnv.addEventListener(main.EVENTS.MOUSE_DOWN, main.Handlers.onMouseDown, false)
+    cnv.addEventListener(main.EVENTS.MOUSE_UP, main.Handlers.onMouseUp, false)
+    cnv.addEventListener(main.EVENTS.MOUSE_MOVE, main.Handlers.onMouseMove, false)
 
     main.state.setMoveState()
   }
