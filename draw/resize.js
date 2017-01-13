@@ -1,18 +1,19 @@
-(function(drawFn, utils) {
-  const canvas = utils.getCanvas()
-    // context = canvas.getContext('2d')
+(function (drawFn) {
+  const canvas = document.getElementById('canvas')
+  // context = canvas.getContext('2d')
 
   window.addEventListener('resize', resizeCanvas, false)
 
-  function resizeCanvas() {
+  function resizeCanvas () {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 
     drawFn()
   }
+
   resizeCanvas()
 
-  function drawStuff() {
+  function drawStuff () {
     // do your drawing stuff here
   }
-})(drawFn, utils);
+})(drawFn);

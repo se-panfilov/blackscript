@@ -1,21 +1,26 @@
-function CIRCLE () {
-  this.data = {}
-  this.data.points = {}
-  this.data.props = {}
+function Circle () {
+  this.data = {
+    points: {},
+    props: {}
+  }
 }
 
-CIRCLE.prototype.build = function (obj, radius) {
+Circle.prototype.setData = function (obj) {
+  this.data = obj
+}
+
+Circle.prototype.build = function (obj, radius) {
   const shapeObj = {}
-  Object.assign(shapeObj, obj)
-  shapeObj.props.radius = radius
+  Object.assign(shapeObj, obj || this.data)
+  shapeObj.props.radius = radius || this.data.props.radius
 
   return shapeObj
 }
 
-CIRCLE.prototype.getRadius = function (area) {
+Circle.prototype.getRadius = function (area) {
   return Math.sqrt(area / Math.PI)
 }
 
-CIRCLE.prototype.addPoint = function ({ x, y }) {
+Circle.prototype.addPoint = function ({ x, y }) {
   this.data.points.o = { x, y }
 }

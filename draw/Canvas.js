@@ -1,6 +1,6 @@
 function Canvas (name) {
   this.ctx = null
-  this.canvas = null
+  this.cnv = null
   this.CANVAS_ID = name
 }
 
@@ -17,8 +17,9 @@ Canvas.prototype.getCursorPosition = function (canvas, event) {
 }
 
 Canvas.prototype.init = function () {
-  this.ctx = this.getContext("2d")
-  this.canvas = this.getCanvas()
+  const canvas = this.getCanvas()
+  this.cnv = canvas
+  this.ctx = canvas.getContext("2d")
 
   return this
 }

@@ -1,26 +1,31 @@
-function RECT () {
-  this.data = {}
-  this.data.points = {}
-  this.data.props = {}
+function Rect () {
+  this.data = {
+    points: {},
+    props: {}
+  }
 }
 
-RECT.prototype.addPoint = function ({ x, y }) {
+Rect.prototype.setData = function (obj) {
+  this.data = obj
+}
+
+Rect.prototype.addPoint = function ({ x, y }) {
   if (!this.data.points.a) this.data.points.a = { x, y }
   else if (!this.data.points.b) this.data.points.b = { x, y }
   else if (!this.data.points.c) this.data.points.c = { x, y }
   else if (!this.data.points.d) this.data.points.d = { x, y }
 }
 
-RECT.prototype.getLength = function (begin, end) {
+Rect.prototype.getLength = function (begin, end) {
   return Math.sqrt(Math.pow(end.x - begin.x, 2) + Math.pow(end.y - begin.y, 2))
 }
 
-RECT.prototype.getClosestPoint = function (coords) {
+Rect.prototype.getClosestPoint = function (position) {
   const arr = []
 
   for (let prop in this.data.points) {
     if (this.data.points.hasOwnProperty(prop)) {
-      arr.push({ name: prop, val: this.getLength(this.data.points[prop], coords) })
+      arr.push({ name: prop, val: this.getLength(this.data.points[prop], position) })
     }
   }
 
@@ -28,11 +33,11 @@ RECT.prototype.getClosestPoint = function (coords) {
   return arr.sort((a, b) => a.val - b.val)[0].name
 }
 
-RECT.prototype.getSideLength = function (begin, end) {
+Rect.prototype.getSideLength = function (begin, end) {
   return Math.sqrt(Math.pow(end.x - begin.x, 2) + Math.pow(end.y - begin.y, 2))
 }
 
-RECT.prototype.getAngle = function (start, end, center) {
+Rect.prototype.getAngle = function (start, end, center) {
   const startToCenter = this.getSideLength(start, center)
   const endToCenter = this.getSideLength(end, center)
   const startToEnd = this.getSideLength(start, end)
@@ -41,42 +46,41 @@ RECT.prototype.getAngle = function (start, end, center) {
   return angle * (180 / Math.PI)
 }
 
-RECT.prototype.getRadians = function (degrees) {
+Rect.prototype.getRadians = function (degrees) {
   return degrees * (Math.PI / 180)
 }
 
-RECT.prototype.getArea = function (ab, bc, alpha) {
+Rect.prototype.getArea = function (ab, bc, alpha) {
   //   return ((ac / 2) * bd) * Math.sin(this.getRadians(alpha))
   return ab * bc * Math.sin(this.getRadians(alpha))
 }
 
-RECT.prototype.build = function (obj) {
+Rect.prototype.build = function (obj) {
   const shapeObj = {}
-  Object.assign(shapeObj, obj)
+  Object.assign(shapeObj, obj || this.data)
 
   //Get 4-th point
-  shapeObj.points.d = this.getLastPoint(obj.points)
+  shapeObj.points.d = this.getLastPoint(shapeObj.points)
 
   //Center
   shapeObj.props.o = this.getCenter(shapeObj.points)
 
   //Area
-  const alphaAngle = shapeCounting.common.getAngle(shapeObj.points.b, shapeObj.points.d, shapeObj.points.a)
-  shapeObj.props.area = this.getArea(shapeObj.points, alphaAngle)
+  const alphaAngle = this.getAngle(shapeObj.points.b, shapeObj.points.d, shapeObj.points.a)
+  const ab = this.getSideLength(shapeObj.points.a, shapeObj.points.b)
+  const bc = this.getSideLength(shapeObj.points.b, shapeObj.points.c)
+  shapeObj.props.area = this.getArea(ab, bc, alphaAngle)
 
   return shapeObj
 }
-RECT.prototype.getLastPoint = function ({ a, b, c }) {
+
+Rect.prototype.getLastPoint = function ({ a, b, c }) {
   const dX = a.x - b.x + c.x
   const dY = a.y - b.y + c.y
 
   return { x: dX, y: dY }
 }
-RECT.prototype.getArea = function ({ a, b, c }, angle) {
-  const ab = shapeCounting.common.getSideLength(a, b)
-  const bc = shapeCounting.common.getSideLength(b, c)
-  return shapeCounting.common.getArea(ab, bc, angle)
-}
-RECT.prototype.getCenter = function ({ c, a }) {
+
+Rect.prototype.getCenter = function ({ c, a }) {
   return { x: (c.x + a.x) / 2, y: (c.y + a.y) / 2 }
 }
