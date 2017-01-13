@@ -94,6 +94,7 @@ const drawFn = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
   }
 
   function redraw (newPoints) {
+    if (Object.keys(rect.data.points).length === 0) return
     if (newPoints) rect.setPoints(newPoints)
     canvas.clear()
 
