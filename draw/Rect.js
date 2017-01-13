@@ -25,6 +25,10 @@ const Rect = (function () {
       throw new Error('RECT: To much points')
     }
 
+    Rect.prototype.setPoints = function (obj) {
+      this.data.points = obj
+    }
+
     Rect.prototype.setPoint = function (name, { x, y }) {
       this.data.points[name] = { x, y }
     }
@@ -49,18 +53,18 @@ const Rect = (function () {
       return Math.sqrt(Math.pow(end.x - begin.x, 2) + Math.pow(end.y - begin.y, 2))
     }
 
-    Rect.prototype.getClosestPoint = function (position) {
-      const arr = []
-
-      for (let prop in this.data.points) {
-        if (this.data.points.hasOwnProperty(prop)) {
-          arr.push({ name: prop, val: this.getLength(this.data.points[prop], position) })
-        }
-      }
-
-      console.info(arr.sort((a, b) => a.val - b.val)[0])
-      return arr.sort((a, b) => a.val - b.val)[0].name
-    }
+    // Rect.prototype.getClosestPoint = function (position) {
+    //   const arr = []
+    //
+    //   for (let prop in this.data.points) {
+    //     if (this.data.points.hasOwnProperty(prop)) {
+    //       arr.push({ name: prop, val: this.getLength(this.data.points[prop], position) })
+    //     }
+    //   }
+    //
+    //   // console.info(arr.sort((a, b) => a.val - b.val)[0])
+    //   return arr.sort((a, b) => a.val - b.val)[0].name
+    // }
 
     Rect.prototype.getSideLength = function (begin, end) {
       return Math.sqrt(Math.pow(end.x - begin.x, 2) + Math.pow(end.y - begin.y, 2))
