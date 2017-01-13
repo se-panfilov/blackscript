@@ -1,4 +1,4 @@
-(function (drawFn) {
+const resizer = (function (drawFn) {
   const canvas = document.getElementById('canvas')
   // context = canvas.getContext('2d')
 

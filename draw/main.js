@@ -1,4 +1,4 @@
-const drawFn = (function draw (Canvas, drawer, Dragger) {
+const drawFn = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
 
   const EVENTS = {
     CLICK: 'click',
@@ -49,11 +49,10 @@ const drawFn = (function draw (Canvas, drawer, Dragger) {
 
   function onMouseDown (event) {
     // console.info('onMouseDown')
-    // if (isInPath(Canvas.ctx, Canvas.cnv, event)) {
+    // // if (isInPath(Canvas.ctx, Canvas.cnv, event)) {
+    // //   selStyle(Canvas.ctx)
+    // // }
     //
-    //   selStyle(Canvas.ctx)
-    // }
-
     // const position = canvas.getCursorPosition(canvas.cnv, event)
     // const closestKey = rect.getClosestPoint(position)
     // console.info(closestKey)
@@ -83,4 +82,4 @@ const drawFn = (function draw (Canvas, drawer, Dragger) {
   return function draw () {
     // makeRect(ctx, rectShape => makeCircle(ctx, rectShape))
   }
-}(Canvas, drawer, Dragger));
+}(Canvas, drawer, Dragger, Rect, Circle));
