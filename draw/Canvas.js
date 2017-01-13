@@ -4,6 +4,10 @@ function Canvas (name) {
   this.CANVAS_ID = name
 }
 
+Canvas.prototype.clear = function () {
+  this.ctx.clearRect(0, 0, this.cnv.width, this.cnv.height);
+}
+
 Canvas.prototype.getCanvas = function () {
   return document.getElementById(this.CANVAS_ID)
 }

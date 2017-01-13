@@ -44,48 +44,20 @@ const Dragger = (function () {
     this.isMouseDown = false
   }
 
-  Dragger.prototype.onMouseMove = function (event, drawCb) {
+  Dragger.prototype.onMouseMove = function (event, cb) {
     if (!this.isMouseDown) return
 
     const rect = this.canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
 
-    // let mouseX = parseInt(event.clientX - x)
-    // let mouseY = parseInt(event.clientY - y)
-
     this.draggableObjects[this.closestObjName].x = x
     this.draggableObjects[this.closestObjName].y = y
 
-    // for each obj in the objs array
-    // use context.isPointInPath to test if it’s being dragged
-
-    // for (let i = 0; i < objs.length; i++) {
-    //   let obj = objs[i]
-    //   drawObj(obj)
-    //   if (ctx.isPointInPath(lastX, lastY)) {
-    //
-    //     // if this obj’s being dragged,
-    //     // move it by the change in mouse position from lastXY to currentXY
-    //
-    //     obj.x += (mouseX - this.coords.x )
-    //     obj.y += (mouseY - this.coords.y)
-    //     obj.right = obj.x + obj.width
-    //     obj.bottom = obj.y + obj.height
-    //   }
-    // }
-
-    // update the lastXY to the current mouse position
-    // this.coords.x = mouseX
     this.coords.x = x
-    // this.coords.y = mouseY
     this.coords.y = y
 
-    // console.info( this.draggableObjects.b.x)
-    return this.draggableObjects
-
-    // draw all ships in their new positions
-    // drawCb()
+    return cb(this.draggableObjects)
   }
 
   return Dragger

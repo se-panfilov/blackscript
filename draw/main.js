@@ -65,82 +65,44 @@ const drawFn = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
 
       if (Object.keys(rect.data.points).length === 3) {
         makeRect(canvas.ctx, rectShape => makeCircle(canvas.ctx, rectShape))
-        prepareDrag(canvas.cnv, rect.data.points)
+        activateDragPoints(canvas.cnv, rect.data.points)
       }
     }
   }
 
-  function prepareDrag (cnv, draggableObj) {
+  function activateDragPoints (cnv, draggableObj) {
     const dragger = new Dragger(cnv, draggableObj)
-    let isMouseDown = false
 
     cnv.addEventListener(EVENTS.MOUSE_DOWN, event => {
       if (!state.isMoveState()) return
       dragger.onMouseDown.call(dragger, event)
-      isMouseDown = true
     }, false)
 
     cnv.addEventListener(EVENTS.MOUSE_UP, event => {
       if (!state.isMoveState()) return
       dragger.onMouseUp.call(dragger, event)
-      isMouseDown = false
     }, false)
 
     cnv.addEventListener(EVENTS.MOUSE_MOVE, event => {
       if (!state.isMoveState()) return
-      if (!isMouseDown) return
-      // TODO (S.Panfilov) return when mouse not pressed
+      if (!dragger.isMouseDown) return
 
-      const newPoints = dragger.onMouseMove.call(dragger, event, draggableObj)
-      rect.setPoints(newPoints)
-
-      canvas.ctx.clearRect(0, 0, cnv.width, cnv.height);
-
-      console.info(`${rect.data.points.b.y} `)
-
-      drawer.drawDot(canvas.ctx, rect.data.points.a)
-      drawer.drawDot(canvas.ctx, rect.data.points.b)
-      drawer.drawDot(canvas.ctx, rect.data.points.c)
-      makeRect(canvas.ctx, rectShape => makeCircle(canvas.ctx, rectShape))
-
+      dragger.onMouseMove.call(dragger, event, redraw)
     }, false)
 
     state.setMoveState()
   }
 
-  // function onMouseDown (event) {
-  //   console.info('onMouseDown')
-  //   // if (isInPath(Canvas.ctx, Canvas.cnv, event)) {
-  //   //   selStyle(Canvas.ctx)
-  //   // }
-  //
-  //   const position = canvas.getCursorPosition(canvas.cnv, event)
-  //   const closestKey = rect.getClosestPoint(position)
-  //   console.info(closestKey)
-  // }
-  //
-  // function isInPath (ctx, cnv, event) {
-  //   // const bb = cnv.getBoundingClientRect()
-  //   // const x = (event.clientX - bb.left) * (cnv.width / bb.width)
-  //   // console.info(x)
-  //   // const y = (event.clientY - bb.top) * (cnv.height / bb.height)
-  //
-  //   const rect = cnv.getBoundingClientRect()
-  //   const x = event.clientX - rect.left
-  //   const y = event.clientY - rect.top
-  //
-  //   // console.info(`x: ${x}, y ${y}`)
-  //   // console.info(ctx.isPointInPath(x, y))
-  //   return ctx.isPointInPath(x, y)
-  // }
-  //
-  // function selStyle (ctx) {
-  //   ctx.lineWidth = 2
-  //   ctx.strokeStyle = "brown"
-  //   ctx.fillStyle = "cyan"
-  // }
+  function redraw (newPoints) {
+    if (newPoints) rect.setPoints(newPoints)
+    canvas.clear()
 
-  return function draw () {
-    // makeRect(ctx, rectShape => makeCircle(ctx, rectShape))
+    drawer.drawDot(canvas.ctx, rect.data.points.a)
+    drawer.drawDot(canvas.ctx, rect.data.points.b)
+    drawer.drawDot(canvas.ctx, rect.data.points.c)
+
+    makeRect(canvas.ctx, rectShape => makeCircle(canvas.ctx, rectShape))
   }
+
+  return redraw
 }(Canvas, drawer, Dragger, Rect, Circle));
