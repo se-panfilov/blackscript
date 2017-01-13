@@ -11,3 +11,20 @@ html, body {
 canvas {
     display: block;
 }
+
+#canvas {
+    z-index: 1;
+}
+
+.reset_btn {
+    position: absolute;
+    color: #4a4a4a;
+    z-index: 10;
+    bottom: 20px;
+    right: 20px;
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 3px;
+    background-color: #efeeee;
+    border: 1px solid #808080;
+}
