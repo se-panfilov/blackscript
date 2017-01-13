@@ -63,7 +63,6 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
       this.circle.setData(shape)
 
       drawer.drawCircle(ctx, shape)
-      console.info(this.circle.data.props)
       const label = `● Area: ${Number.parseInt(this.circle.data.props.area)}, ● Radius: ${Number.parseInt(this.circle.data.props.radius)}`
       const color = '#fff448'
       const labelPosition = {
