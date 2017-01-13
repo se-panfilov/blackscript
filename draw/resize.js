@@ -1,4 +1,4 @@
-const resizer = (function (drawFn) {
+const resizer = (function (main) {
   const canvas = document.getElementById('canvas')
   // context = canvas.getContext('2d')
 
@@ -8,7 +8,7 @@ const resizer = (function (drawFn) {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 
-    drawFn()
+    main.redraw()
   }
 
   resizeCanvas()
@@ -16,4 +16,4 @@ const resizer = (function (drawFn) {
   function drawStuff () {
     // do your drawing stuff here
   }
-})(drawFn);
+})(main);
