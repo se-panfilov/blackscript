@@ -31,11 +31,28 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
     circle: new Circle(),
     dragger: null,
     fillRect (ctx, position) {
-      return this.rect.addPoint(drawer.drawDot(ctx, position))
+      const dotPosition = drawer.drawDot(ctx, position)
+      this.drawCoords(ctx, dotPosition)
+      return this.rect.addPoint(dotPosition)
+    },
+    drawCoords (ctx, dotPosition, radius = 5.5) {
+      const textPosition = {
+        x: dotPosition.x,
+        y: dotPosition.y - (radius + 10)
+      }
+
+      drawer.drawText(ctx, textPosition, `(x: ${dotPosition.x}, y: ${dotPosition.y})`)
     },
     makeRect (ctx, cb) {
       const shape = this.rect.build()
       drawer.drawRect(ctx, shape)
+      const label = `■ Area: ${Number.parseInt(this.rect.data.props.area)}`
+      const color = 'blue'
+      const labelPosition = {
+        x:  this.rect.data.props.o.x,
+        y:  this.rect.data.props.o.y + 10
+      }
+      drawer.drawText(this.canvas.ctx, labelPosition, label, color)
       this.rect.setData(shape)
       cb(shape)
     },
@@ -46,6 +63,14 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
       this.circle.setData(shape)
 
       drawer.drawCircle(ctx, shape)
+      console.info(this.circle.data.props)
+      const label = `● Area: ${Number.parseInt(this.circle.data.props.area)}, ● Radius: ${Number.parseInt(this.circle.data.props.radius)}`
+      const color = '#fff448'
+      const labelPosition = {
+        x:  this.circle.data.points.o.x,
+        y:  this.circle.data.points.o.y - 10
+      }
+      drawer.drawText(this.canvas.ctx, labelPosition, label, color)
     },
     redraw (newPoints) {
       if (Object.keys(this.rect.data.points).length === 0) return
@@ -53,9 +78,17 @@ const main = (function draw (Canvas, drawer, Dragger, Rect, Circle) {
       this.canvas.clear()
 
       drawer.drawDot(this.canvas.ctx, this.rect.data.points.a)
-      drawer.drawDot(this.canvas.ctx, this.rect.data.points.b)
-      drawer.drawDot(this.canvas.ctx, this.rect.data.points.c)
+      this.drawCoords(this.canvas.ctx, this.rect.data.points.a)
 
+      drawer.drawDot(this.canvas.ctx, this.rect.data.points.b)
+      this.drawCoords(this.canvas.ctx, this.rect.data.points.b)
+
+      drawer.drawDot(this.canvas.ctx, this.rect.data.points.c)
+      this.drawCoords(this.canvas.ctx, this.rect.data.points.c)
+
+      this.drawCoords(this.canvas.ctx, this.rect.data.points.d)
+
+      // drawer.drawText(this.canvas.ctx, this.rect.data.props.o, `Area: ${Number.parseInt(this.rect.data.props.area)}`, 'blue')
       this.makeRect(this.canvas.ctx, rectShape => this.makeCircle(this.canvas.ctx, rectShape))
     },
     reset () {

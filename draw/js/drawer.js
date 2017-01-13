@@ -32,5 +32,10 @@ const drawer = {
     ctx.stroke()
 
     return shapeObj
+  },
+  drawText (ctx, position, text, color = 'red', font = "11px serif") {
+    ctx.font = font
+    ctx.fillStyle = color
+    ctx.fillText(text, position.x, position.y)
   }
 }
